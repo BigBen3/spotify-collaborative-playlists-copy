@@ -1,3 +1,7 @@
+
+//this happens first then the server.ts
+//this sends you to the auth page
+//the server ts gets the 
 export const load = async ({ locals, cookies }) => {
 	const auth = await locals.auth.validateUser();
 
