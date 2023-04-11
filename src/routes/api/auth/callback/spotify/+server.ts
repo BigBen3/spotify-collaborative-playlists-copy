@@ -36,14 +36,17 @@ export const GET = async ({ url, cookies }) => {
 		// 	grant_type: 'authorization_code'
 		// })
 	});
+	const data = await result.json();
+	const accessToken = data.access_token;
 
+	console.log('Access token:', accessToken);
 	console.log(result.status);
 	console.log(await result.text());
 
 	if (!result.ok) {
 		throw redirect(300, '/?error=A problemo');
 	}
-
+	
 	return json({
 		code,
 		state
