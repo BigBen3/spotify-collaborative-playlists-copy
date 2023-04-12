@@ -3,10 +3,12 @@
 //this sends you to the auth page
 //the server ts gets the 
 export const load = async ({ locals, cookies }) => {
+
+
 	const auth = await locals.auth.validateUser();
 
 	const spotifyAuthUrl = new URL(`https://accounts.spotify.com/authorize?`);
-
+	
 	const state = crypto.randomUUID();
 
 	spotifyAuthUrl.searchParams.append('response_type', 'code');
