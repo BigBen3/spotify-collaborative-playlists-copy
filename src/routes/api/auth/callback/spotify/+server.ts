@@ -23,10 +23,11 @@ export const GET = async ({ url, cookies }) => {
 	spotifyURL.searchParams.append('code', code as string);
 	spotifyURL.searchParams.append('redirect_uri', 'http://localhost:5173/api/auth/callback/spotify');
 	spotifyURL.searchParams.append('grant_type', 'authorization_code');
-
+	spotifyURL.searchParams.append('client_id', VITE_SPOTIFY_CLIENT_ID);
+ 
 	console.log(spotifyURL.toString());
 
-	const result = await fetch(url, {
+	const result = await fetch(spotifyURL, {
 		method: 'POST',
 		headers
 
@@ -36,20 +37,20 @@ export const GET = async ({ url, cookies }) => {
 		// 	grant_type: 'authorization_code'
 		// })
 	});
-	const data = await result.json();
-	const accessToken = data.access_token;
 
-	console.log('Access token:', accessToken);
 	console.log(result.status);
 	console.log(await result.text());
-
+	const redirectResponse = redirect(302, '/dashboard');
 	if (!result.ok) {
 		throw redirect(300, '/?error=A problemo');
 	}
 	
 	return json({
-		code,
-		state
+		...redirectResponse,
+        body: {
+            code,
+            state
+        }
 	});
 
 	throw redirect(300, '/');
