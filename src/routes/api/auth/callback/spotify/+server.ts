@@ -41,25 +41,17 @@ export const GET = async ({ url, cookies }) => {
 	const data = await result.json();
 
 	const accessToken = data.access_token;
-	const requestToken = data.requestToken;
+	const requestToken = data.refresh_token;
 	console.log("it is " + result.status);
 	console.log("access token " + accessToken);
-	console.log("request token " + requestToken)
+	console.log("refresh token " + requestToken)
 	
 	const redirectResponse = redirect(302, '/dashboard');
 	if (!result.ok) {
 		throw redirect(302, '/?error=A problemo');
 	}
 	
-	return json({
-		...redirectResponse,
-        body: {
-            code,
-            state, 
-			data
-        }
-	});
-
+	throw redirect(302, "/dashboard")
 	
 };
 export const POST = async (refreshToken: string, clientId: string, clientSecret: string) => {
