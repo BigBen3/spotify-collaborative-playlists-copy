@@ -37,21 +37,54 @@ export const GET = async ({ url, cookies }) => {
 		// 	grant_type: 'authorization_code'
 		// })
 	});
+	
+	const data = await result.json();
 
-	console.log(result.status);
-	console.log(await result.text());
+	const accessToken = data.access_token;
+	const requestToken = data.requestToken;
+	console.log("it is " + result.status);
+	console.log("access token " + accessToken);
+	console.log("request token " + requestToken)
+	
 	const redirectResponse = redirect(302, '/dashboard');
 	if (!result.ok) {
-		throw redirect(300, '/?error=A problemo');
+		throw redirect(302, '/?error=A problemo');
 	}
 	
 	return json({
 		...redirectResponse,
         body: {
             code,
-            state
+            state, 
+			data
         }
 	});
 
-	throw redirect(300, '/');
+	
 };
+export const POST = async (refreshToken: string, clientId: string, clientSecret: string) => {
+	const authKey = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  
+	const headers = new Headers();
+	headers.append('Authorization', `Basic ${authKey}`);
+	headers.append('Content-Type', 'application/x-www-form-urlencoded');
+  
+	const body = new URLSearchParams();
+	body.append('grant_type', 'refresh_token');
+	body.append('refresh_token', refreshToken);
+  
+	const spotifyURL = new URL('https://accounts.spotify.com/api/token');
+  
+	const result = await fetch(spotifyURL, {
+	  method: 'POST',
+	  headers,
+	  body,
+	});
+  
+	if (!result.ok) {
+	  throw new Error('Failed to refresh access token');
+	}
+  
+	const data = await result.json();
+	return data.access_token;
+  };
